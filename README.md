@@ -1,16 +1,48 @@
-# React + Vite
+# 🎮 Memory Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Memory Game - klassik xotira o'yini. O'yin paytida rangli kartalarni o'rnashtirish va bir xil juftlikni topish kerak.
 
-Currently, two official plugins are available:
+## 📋 Tavsif
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Bu loyiha **Memory Game** - xotiraning quvvatini oshirish uchun moʻljallangan klassik oʻyin. Oʻyinni faollashtirish uchun kartalarni bosing, ular aylanib turgan kartalarni ketma-ket yozib oling va bir xil juftlikni topishga urinib koʻring.
 
-## React Compiler
+## 🛠️ Texnologiyalar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Loyihada qoʻllanilgan texnologiyalar:
 
-## Expanding the ESLint configuration
+- **JavaScript** - 58.3% (asosiy logika)
+- **CSS** - 26.3% (dizayn va uslub)
+- **HTML** - 15.4% (struktura)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Boshlash
+
+### Talab qilinadigan narsalar
+- Node.js va npm
+
+### O'rnatish va ishga tushirish
+
+```bash
+# Loyihani klonlash
+git clone https://github.com/Abdullohkhan/memory-game.git
+cd memory-game
+
+# Bog'lanishlani o'rnatish
+npm install
+
+# Rivojlash serverini ishga tushirish
+npm run dev
+
+# Ishlab chiqarish uchun build qilish
+npm run build
+
+# Build-ni ko'rib chiqish
+npm run preview
+
+memory-game/
+├── src/
+│   ├── App.jsx          # Asosiy komponent
+│   ├── App.css          # Asosiy uslublar
+│   └── index.css        # Global uslublar
+├── index.html           # HTML shabloni
+├── package.json         # Loyihaning metama'lumotlari
+└── README.md            # Bu fayl
