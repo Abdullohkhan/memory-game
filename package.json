@@ -2,14 +2,21 @@
   "name": "memory-game-monorepo",
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "web": "npm run dev -w @memory/web",
     "web:build": "npm run build -w @memory/web",
-    "android": "npm run android -w MemoryGame",
-    "mobile:start": "npm run start -w MemoryGame",
+    "android": "npm run android -w @memory/mobile",
+    "mobile:start": "npm run start -w @memory/mobile",
     "test": "npm run test -ws --if-present",
     "lint": "npm run lint -ws --if-present",
     "typecheck": "npm run typecheck -ws --if-present"
+  },
+  "overrides": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   }
 }
