@@ -24,10 +24,27 @@ export function createGame(difficulty: Difficulty, deck = generateDeck(difficult
   };
 }
 
-/** Points for a won game: pairs, plus bonuses for time and moves left. */
+/** Points for a won game: pairs, plus bonuses for time and moves left. Shared with the server for validation. */
+export function computePoints(difficulty: Difficulty, moves: number, timeLeft: number): number {
+  const cfg = DIFFICULTIES[difficulty];
+  return cfg.pairs * 100 + timeLeft * 5 + Math.max(0, cfg.moveLimit - moves) * 10;
+}
+
+/** True if a reported result is physically possible for the difficulty. */
+export function isValidResult(difficulty: Difficulty, moves: number, timeLeft: number): boolean {
+  const cfg = DIFFICULTIES[difficulty];
+  return (
+    Number.isInteger(moves) &&
+    Number.isInteger(timeLeft) &&
+    moves >= cfg.pairs &&
+    moves <= cfg.moveLimit &&
+    timeLeft >= 0 &&
+    timeLeft <= cfg.timeLimit
+  );
+}
+
 export function calcPoints(state: GameState): number {
-  const cfg = DIFFICULTIES[state.difficulty];
-  return state.matched.length * 100 + state.timeLeft * 5 + Math.max(0, cfg.moveLimit - state.moves) * 10;
+  return computePoints(state.difficulty, state.moves, state.timeLeft);
 }
 
 export function isActive(state: GameState): boolean {

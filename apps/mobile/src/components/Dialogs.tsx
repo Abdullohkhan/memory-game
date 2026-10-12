@@ -4,7 +4,7 @@ import { LANGUAGES, type GameState, type Palette, type Settings, type ThemeMode 
 import type { T } from '../hooks/useSettings';
 import { Button, Segmented } from './ui';
 
-function Sheet({ visible, palette, onClose, children }: { visible: boolean; palette: Palette; onClose?: () => void; children: React.ReactNode }) {
+export function Sheet({ visible, palette, onClose, children }: { visible: boolean; palette: Palette; onClose?: () => void; children: React.ReactNode }) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <Pressable style={styles.backdrop} onPress={onClose}>

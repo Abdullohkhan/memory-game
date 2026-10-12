@@ -95,6 +95,16 @@ android {
         versionName appVersionNameValue
     }
     signingConfigs {
+        // Real release key: provided by CI (GitHub secrets) through environment variables.
+        // Without them the build falls back to the public debug key (fine for local testing only).
+        if (System.getenv("MEMORY_KEYSTORE_FILE")) {
+            release {
+                storeFile file(System.getenv("MEMORY_KEYSTORE_FILE"))
+                storePassword System.getenv("MEMORY_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("MEMORY_KEY_ALIAS")
+                keyPassword System.getenv("MEMORY_KEY_PASSWORD")
+            }
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -109,7 +119,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig System.getenv("MEMORY_KEYSTORE_FILE") ? signingConfigs.release : signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }

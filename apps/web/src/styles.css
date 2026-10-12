@@ -136,6 +136,26 @@ legend { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
 .switch-row small { display: block; font-weight: 400; color: var(--text-muted); }
 .switch-row input { width: 22px; height: 22px; accent-color: var(--primary); flex-shrink: 0; }
 
+/* ---- account / leaderboard ---- */
+.topbar-actions { display: flex; gap: 8px; }
+.icon-btn.is-signed-in { border-color: var(--success); box-shadow: 0 0 0 2px var(--success); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 700; font-size: 0.9rem; }
+.field small { color: var(--text-muted); }
+.field-row { display: flex; gap: 8px; }
+.field input {
+  flex: 1; min-width: 0; min-height: 44px; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--background); color: var(--text); font: inherit;
+}
+.form-error { color: var(--danger); font-weight: 600; text-align: center; }
+.google-btn { display: flex; justify-content: center; min-height: 44px; }
+.leaders { list-style: none; display: flex; flex-direction: column; gap: 4px; max-height: 50vh; overflow-y: auto; }
+.leaders li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--surface-alt); }
+.leaders li.is-me { outline: 2px solid var(--primary); }
+.leader-rank { width: 1.8em; font-weight: 800; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.leader-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leader-name em { font-style: normal; color: var(--text-muted); font-size: 0.85em; }
+
 /* ---- tablet ---- */
 @media (min-width: 640px) {
   .app { padding-inline: 28px; gap: 16px; }

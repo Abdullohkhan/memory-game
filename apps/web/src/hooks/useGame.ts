@@ -86,6 +86,16 @@ export function useGame(soundOn: boolean) {
     },
     [sfx],
   );
+  const mergeBest = useCallback((incoming: BestScores) => {
+    setBest((b) => {
+      const merged: BestScores = { ...b };
+      for (const d of DIFFICULTY_LIST) {
+        const v = incoming[d];
+        if (v !== undefined && v > (merged[d] ?? 0)) merged[d] = v;
+      }
+      return merged;
+    });
+  }, []);
   const newGame = useCallback((difficulty: Difficulty) => {
     setNewRecord(false);
     dispatch({ type: "NEW_GAME", difficulty });
@@ -97,6 +107,7 @@ export function useGame(soundOn: boolean) {
     newRecord,
     flip,
     newGame,
+    mergeBest,
     pause: () => dispatch({ type: "PAUSE" }),
     resume: () => dispatch({ type: "RESUME" }),
   };
