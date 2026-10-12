@@ -41,11 +41,33 @@ jobs:
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
       - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
-      - name: Build release APK (debug-keystore signed; replace with your own keystore for Play Store)
+      - name: Inject app config (repository variables API_URL, GOOGLE_WEB_CLIENT_ID; both public values)
+        env:
+          API_URL: ${{ vars.API_URL }}
+          GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_WEB_CLIENT_ID }}
+        run: |
+          node -e "require('fs').writeFileSync('apps/mobile/src/config.json', JSON.stringify({ apiUrl: process.env.API_URL || '', googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID || '' }, null, 2))"
+      - name: Prepare release signing key (falls back to the debug key if the secret is not set)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/memory-release.jks"
+            echo "MEMORY_KEYSTORE_FILE=$RUNNER_TEMP/memory-release.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set - APK is signed with the public debug key"
+          fi
+      - name: Build release APK
         working-directory: apps/mobile/android
+        env:
+          MEMORY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          MEMORY_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          MEMORY_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew assembleRelease --no-daemon -PappVersionCode=${{ github.run_number }} -PappVersionName=1.0.${{ github.run_number }}
-      - name: Name the APK
-        run: cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk memory-game.apk
+      - name: Name the APK and show its signing certificate
+        run: |
+          cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk memory-game.apk
+          "$(ls -d $ANDROID_HOME/build-tools/*/ | tail -1)apksigner" verify --print-certs memory-game.apk | grep -E "SHA-256|certificate DN" | head -2
       - uses: actions/upload-artifact@v4
         with:
           name: memory-game-android-apk

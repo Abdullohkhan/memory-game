@@ -31,3 +31,8 @@ local.properties
 *.aab
 .kotlin
 .metro-health-check*
+
+# signing keys must never be committed
+*.jks
+release.keystore
+keystore.base64

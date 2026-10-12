@@ -13,13 +13,24 @@ import {
 } from '@memory/core';
 import { store } from '../storage';
 
+function mergeMax(a: BestScores, b: BestScores): BestScores {
+  const out: BestScores = { ...a };
+  for (const d of DIFFICULTY_LIST) {
+    const v = b[d];
+    if (v !== undefined && v > (out[d] ?? 0)) {
+      out[d] = v;
+    }
+  }
+  return out;
+}
+
 export function useGame(vibrate: boolean) {
   const [state, dispatch] = useReducer(gameReducer, 'easy' as Difficulty, d => createGame(d));
   const [best, setBest] = useState<BestScores>({});
   const [newRecord, setNewRecord] = useState(false);
 
   useEffect(() => {
-    loadBest(store, DIFFICULTY_LIST).then(setBest);
+    loadBest(store, DIFFICULTY_LIST).then(loaded => setBest(b => mergeMax(b, loaded)));
   }, []);
 
   useEffect(() => {
@@ -79,6 +90,7 @@ export function useGame(vibrate: boolean) {
   }, [state, vibrate]);
 
   const flip = useCallback((index: number) => dispatch({ type: 'FLIP', index }), []);
+  const mergeBest = useCallback((incoming: BestScores) => setBest(b => mergeMax(b, incoming)), []);
   const newGame = useCallback((difficulty: Difficulty) => {
     setNewRecord(false);
     dispatch({ type: 'NEW_GAME', difficulty });
@@ -90,6 +102,7 @@ export function useGame(vibrate: boolean) {
     newRecord,
     flip,
     newGame,
+    mergeBest,
     pause: () => dispatch({ type: 'PAUSE' }),
     resume: () => dispatch({ type: 'RESUME' }),
   };

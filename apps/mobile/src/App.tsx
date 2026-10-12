@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StatusBar, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DIFFICULTY_LIST } from '@memory/core';
+import { AccountDialog, LeaderboardDialog } from './components/AccountDialogs';
 import { Board } from './components/Board';
 import { ResultDialog, SettingsDialog } from './components/Dialogs';
 import { Stats } from './components/Stats';
 import { Button, Segmented } from './components/ui';
+import { useAccount } from './hooks/useAccount';
 import { useGame } from './hooks/useGame';
 import { useSettings } from './hooks/useSettings';
 
 function Game() {
   const { settings, update, t, palette, scheme } = useSettings();
-  const { state, best, newRecord, flip, newGame, pause, resume } = useGame(settings.sound);
+  const { state, best, newRecord, flip, newGame, mergeBest, pause, resume } = useGame(settings.sound);
+  const account = useAccount({ settings, onSettings: update, onBest: mergeBest });
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [boardOpen, setBoardOpen] = useState(false);
+
+  const { submitScore } = account;
+  useEffect(() => {
+    if (state.status === 'won') {
+      submitScore(state);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on the transition to "won"
+  }, [state.status]);
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
 
@@ -52,14 +65,39 @@ function Game() {
         <Text style={[styles.title, { color: palette.text }]} accessibilityRole="header">
           {t('title')}
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('settings')}
-          onPress={() => setSettingsOpen(true)}
-          style={[styles.iconBtn, { backgroundColor: palette.surface, borderColor: palette.border }]}
-        >
-          <Text style={{ fontSize: 22, color: palette.text }}>⚙</Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          {account.enabled && (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('leaderboard')}
+                onPress={() => setBoardOpen(true)}
+                style={[styles.iconBtn, { backgroundColor: palette.surface, borderColor: palette.border }]}
+              >
+                <Text style={[styles.iconText, { color: palette.text }]}>🏆</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={account.user ? account.user.nickname : t('account')}
+                onPress={() => setAccountOpen(true)}
+                style={[
+                  styles.iconBtn,
+                  { backgroundColor: palette.surface, borderColor: account.user ? palette.success : palette.border },
+                ]}
+              >
+                <Text style={[styles.iconText, { color: palette.text }]}>👤</Text>
+              </Pressable>
+            </>
+          )}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('settings')}
+            onPress={() => setSettingsOpen(true)}
+            style={[styles.iconBtn, { backgroundColor: palette.surface, borderColor: palette.border }]}
+          >
+            <Text style={[styles.iconText, { color: palette.text }]}>⚙</Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -81,6 +119,12 @@ function Game() {
       </ScrollView>
 
       <SettingsDialog visible={settingsOpen} settings={settings} palette={palette} t={t} onChange={update} onClose={() => setSettingsOpen(false)} />
+      {account.enabled && (
+        <>
+          <AccountDialog visible={accountOpen} account={account} palette={palette} t={t} onClose={() => setAccountOpen(false)} />
+          <LeaderboardDialog visible={boardOpen} initial={state.difficulty} userId={account.user?.id} palette={palette} t={t} onClose={() => setBoardOpen(false)} />
+        </>
+      )}
       <ResultDialog state={state} newRecord={newRecord} palette={palette} t={t} onPlayAgain={() => newGame(state.difficulty)} />
     </View>
   );
@@ -98,6 +142,8 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 8 },
   title: { fontSize: 24, fontWeight: '800' },
+  headerActions: { flexDirection: 'row', gap: 8 },
+  iconText: { fontSize: 22 },
   iconBtn: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   content: { alignItems: 'center', gap: 14, padding: 16, paddingTop: 4 },
   contentLandscape: { flexGrow: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 24 },

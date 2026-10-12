@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DIFFICULTIES, createGame, detectLanguage, gameReducer, generateDeck, parseSettings, shuffle, type Card, type GameState } from "./index";
+import { DIFFICULTIES, computePoints, createGame, isValidResult, detectLanguage, gameReducer, generateDeck, parseSettings, shuffle, type Card, type GameState } from "./index";
 
 const deckOf = (...pairIds: number[]): Card[] =>
   pairIds.map((pairId, id) => ({ id, pairId, color: "#000", symbol: "x" }));
@@ -52,7 +52,7 @@ describe("gameReducer", () => {
   it("wins when all pairs are matched and scores points", () => {
     const s = flip(fresh(), 0, 2, 1, 3);
     expect(s.status).toBe("won");
-    expect(s.points).toBe(2 * 100 + 60 * 5 + (DIFFICULTIES.easy.moveLimit - 2) * 10);
+    expect(s.points).toBe(computePoints("easy", 2, 60));
   });
   it("loses when the move limit is hit", () => {
     let s = fresh(deckOf(0, 1, 0, 1));
@@ -84,6 +84,16 @@ describe("gameReducer", () => {
     const s = gameReducer(fresh(), { type: "NEW_GAME", difficulty: "hard" });
     expect(s.deck).toHaveLength(DIFFICULTIES.hard.pairs * 2);
     expect(s.timeLeft).toBe(DIFFICULTIES.hard.timeLimit);
+  });
+});
+
+describe("results", () => {
+  it("validates reported results", () => {
+    expect(isValidResult("easy", 6, 10)).toBe(true);
+    expect(isValidResult("easy", 5, 10)).toBe(false);
+    expect(isValidResult("easy", 21, 10)).toBe(false);
+    expect(isValidResult("easy", 10, 61)).toBe(false);
+    expect(isValidResult("easy", 10.5, 10)).toBe(false);
   });
 });
 
