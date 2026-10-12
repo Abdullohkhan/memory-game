@@ -22,3 +22,12 @@ default
 *.njsproj
 *.sln
 *.sw?
+
+# monorepo / react-native
+.gradle
+build
+local.properties
+*.apk
+*.aab
+.kotlin
+.metro-health-check*

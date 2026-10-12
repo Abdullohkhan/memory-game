@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Core + Web (lint, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint -w @memory/web
+      - run: npm test
+      - run: npm run web:build
+
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Accept Android SDK licenses (SDK is preinstalled on the runner)
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Build release APK (debug-keystore signed; replace with your own keystore for Play Store)
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease --no-daemon -PappVersionCode=${{ github.run_number }} -PappVersionName=1.0.${{ github.run_number }}
+      - name: Name the APK
+        run: cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk memory-game.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: memory-game-android-apk
+          path: memory-game.apk
+
+  release:
+    name: Publish GitHub Release
+    needs: [web, android]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: memory-game-android-apk
+      - name: Create release with a stable asset name
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" memory-game.apk \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "Memory Game 1.0.${{ github.run_number }}" \
+            --notes "Android APK. Always-latest link: https://github.com/${{ github.repository }}/releases/latest/download/memory-game.apk" \
+            --latest
