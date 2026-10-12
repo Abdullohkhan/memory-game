@@ -37,11 +37,15 @@ npm run lint
 
 ## Android APK
 
-Mahalliy: `cd apps/mobile/android && ./gradlew assembleRelease` →
-`apps/mobile/android/app/build/outputs/apk/release/app-release.apk`.
+**Doim oxirgi versiya:** https://github.com/Abdullohkhan/memory-game/releases/latest/download/memory-game.apk
 
-GitHub Actions (`.github/workflows/ci.yml`) har push'da APK yig‘adi: **Actions → run → Artifacts → memory-game-android-apk**.
-APK hozircha debug kalit bilan imzolanadi; Play Store uchun o‘z keystore'ingizni ulang.
+`master`ga har merge'dan keyin GitHub Actions APK yig‘ib yangi Release chiqaradi (`v1.0.<run>`), `versionCode` har safar oshadi, shuning uchun eski ilova ustidan yangilanadi.
+Mahalliy: `cd apps/mobile/android && ./gradlew assembleRelease`. APK debug kalit bilan imzolanadi; Play Store uchun o‘z keystore'ingizni ulang.
+
+## Railway (veb)
+
+Repo ildizidagi `railway.json` tayyor: build `npm ci && npm run web:build`, start `npm run web:start` (`serve` bilan `apps/web/dist`, `$PORT`ni o‘zi oladi).
+Railway'da: New Project → Deploy from GitHub repo → `master`. Root directory o‘zgartirilmaydi.
 
 ## Eslatma
 

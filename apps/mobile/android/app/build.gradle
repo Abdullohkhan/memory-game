@@ -87,8 +87,8 @@ android {
         applicationId "com.memorygame"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode (project.findProperty("appVersionCode") ?: "1").toInteger()
+        versionName (project.findProperty("appVersionName") ?: "1.0.0")
     }
     signingConfigs {
         debug {

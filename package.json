@@ -13,7 +13,8 @@
     "mobile:start": "npm run start -w @memory/mobile",
     "test": "npm run test -ws --if-present",
     "lint": "npm run lint -ws --if-present",
-    "typecheck": "npm run typecheck -ws --if-present"
+    "typecheck": "npm run typecheck -ws --if-present",
+    "web:start": "npm run start -w @memory/web"
   },
   "overrides": {
     "react": "19.2.3",
