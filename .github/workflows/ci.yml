@@ -38,7 +38,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses (SDK is preinstalled on the runner)
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
       - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
       - name: Build release APK (signed with the debug key; replace with your own keystore for Play Store)
