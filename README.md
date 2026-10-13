@@ -41,7 +41,7 @@ npm run lint
 **Doim oxirgi versiya:** https://github.com/Abdullohkhan/memory-game/releases/latest/download/memory-game.apk
 
 `master`ga har merge'dan keyin GitHub Actions APK yig‘ib yangi Release chiqaradi (`v1.0.<run>`), `versionCode` har safar oshadi, shuning uchun eski ilova ustidan yangilanadi.
-Mahalliy: `cd apps/mobile/android && ./gradlew assembleRelease`. APK debug kalit bilan imzolanadi; Play Store uchun o‘z keystore'ingizni ulang.
+Mahalliy: `cd apps/mobile/android && ./gradlew assembleRelease`. Release APK shaxsiy keystore bilan imzolanadi (GitHub secrets, pastga qarang). Secrets yo‘q bo‘lsa debug kalit ishlatiladi.
 
 ## Hisoblar va reyting
 
